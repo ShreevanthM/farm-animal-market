@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Rural Livestock Marketplace for buying and selling farm animals">
+  <title>Kisan Market - Rural Livestock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="logo">
+        <i data-lucide="tractor" class="logo-icon"></i>
+        <span>KisanMarket</span>
+      </div>
+      <button class="icon-button" id="profileBtn" aria-label="Profile">
+        <i data-lucide="user"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main id="app-content">
+    <!-- Views will be dynamically shown/hidden here -->
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-target="home">
+      <i data-lucide="home"></i>
+      <span>Home</span>
+    </button>
+    <button class="nav-item" data-target="listings">
+      <i data-lucide="list"></i>
+      <span>Listings</span>
+    </button>
+    <div class="nav-item-fab-wrapper">
+      <button class="nav-item fab" data-target="add" aria-label="Add Animal">
+        <div class="fab-inner">
+          <i data-lucide="plus"></i>
+        </div>
+      </button>
+    </div>
+    <button class="nav-item" data-target="messages">
+      <i data-lucide="message-square"></i>
+      <span>Chat</span>
+    </button>
+    <button class="nav-item" data-target="saved">
+      <i data-lucide="heart"></i>
+      <span>Saved</span>
+    </button>
+  </nav>
+
+  <!-- Templates -->
+  
+  <!-- Home View Template -->
+  <template id="view-home">
+    <div class="view-container fade-in">
+      <section class="hero-section">
+        <h1>Buy & Sell Livestock Easily</h1>
+        <p>Connecting farmers directly with buyers in your area.</p>
+        <div class="search-bar">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" placeholder="Search for cows, goats..." id="globalSearch">
+        </div>
+        <div style="display: flex; gap: 12px; margin-top: 24px;">
+          <button class="btn-primary ripple" style="flex: 1;" onclick="app.navigate('listings')">
+            <i data-lucide="shopping-bag"></i> Buy Animals
+          </button>
+          <button class="btn-secondary ripple" style="flex: 1; border: 2px solid var(--primary); color: var(--primary); background: transparent;" onclick="app.navigate('add')">
+            <i data-lucide="plus-circle"></i> Sell Animals
+          </button>
+        </div>
+      </section>
+
+      <section class="categories-section">
+        <div class="section-header">
+          <h2>Categories</h2>
+        </div>
+        <div class="category-grid" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="category-card" data-category="cow" onclick="app.filterAndNavigate('cow')">
+            <img src="https://images.unsplash.com/photo-1546445317-29f4545e9d53?auto=format&fit=crop&q=80&w=400&h=400" alt="Cows" loading="lazy">
+            <div class="category-overlay"><h3>Cows</h3></div>
+          </div>
+          <div class="category-card" data-category="buffalo" onclick="app.filterAndNavigate('buffalo')">
+            <img src="https://images.unsplash.com/photo-1618018353326-8c4608c1d530?auto=format&fit=crop&q=80&w=400&h=400" alt="Buffalo" loading="lazy">
+            <div class="category-overlay"><h3>Buffalo</h3></div>
+          </div>
+          <div class="category-card" data-category="goat" onclick="app.filterAndNavigate('goat')">
+            <img src="https://images.unsplash.com/photo-1524024973431-2ad0b889eb25?auto=format&fit=crop&q=80&w=400&h=400" alt="Goats" loading="lazy">
+            <div class="category-overlay"><h3>Goats</h3></div>
+          </div>
+          <div class="category-card" data-category="sheep" onclick="app.filterAndNavigate('sheep')">
+            <img src="https://images.unsplash.com/photo-1484557985045-edf25e08da73?auto=format&fit=crop&q=80&w=400&h=400" alt="Sheep" loading="lazy">
+            <div class="category-overlay"><h3>Sheep</h3></div>
+          </div>
+          <div class="category-card" data-category="chicken" onclick="app.filterAndNavigate('chicken')">
+            <img src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&q=80&w=400&h=400" alt="Chicken" loading="lazy">
+            <div class="category-overlay"><h3>Chicken</h3></div>
+          </div>
+          <div class="category-card" data-category="dog" onclick="app.filterAndNavigate('dog')">
+            <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=400&h=400" alt="Dog" loading="lazy">
+            <div class="category-overlay"><h3>Dog</h3></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="recent-listings">
+        <div class="section-header">
+          <h2>Recent Additions</h2>
+          <button class="text-button" onclick="app.navigate('listings')">View All</button>
+        </div>
+        <div class="horizontal-scroll" id="recentContainer">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+    </div>
+  </template>
+
+  <!-- Listings View Template -->
+  <template id="view-listings">
+    <div class="view-container fade-in">
+      <div class="page-header">
+        <h2>All Livestock</h2>
+        <div class="filter-chips" id="listingsFilters">
+          <button class="chip active" data-filter="all">All</button>
+          <button class="chip" data-filter="cow">Cows</button>
+          <button class="chip" data-filter="goat">Goats</button>
+          <button class="chip" data-filter="sheep">Sheep</button>
+        </div>
+      </div>
+      <div class="listings-grid" id="allListingsContainer">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </template>
+
+  <!-- Add Animal View Template -->
+  <template id="view-add">
+    <div class="view-container fade-in pb-safe">
+      <div class="page-header">
+        <h2 id="formTitle">List an Animal</h2>
+        <p class="subtitle" id="formSubtitle">Fill details to sell your livestock</p>
+      </div>
+      <form class="add-animal-form" id="addAnimalForm">
+        <input type="hidden" id="editListingId" value="">
+        
+        <div class="form-group image-upload">
+          <label for="animalMedia" class="media-upload-label">
+            <div class="upload-placeholder" id="uploadPlaceholder">
+              <i data-lucide="camera" class="camera-icon"></i>
+              <span>Tap to add photos & videos</span>
+            </div>
+          </label>
+          <input type="file" id="animalMedia" accept="image/*,video/*" multiple class="visually-hidden">
+          <div id="mediaPreviewContainer" class="media-preview-container hidden"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="animalType">Animal Type</label>
+          <select id="animalType" class="form-input" required style="appearance: none; background: var(--surface) url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><polyline points=%226 9 12 15 18 9%22></polyline></svg>') no-repeat right 16px center; background-size: 16px;">
+            <option value="cow" selected>Cow</option>
+            <option value="buffalo">Buffalo</option>
+            <option value="goat">Goat</option>
+            <option value="sheep">Sheep</option>
+            <option value="chicken">Chicken</option>
+            <option value="dog">Dog</option>
+            <option value="eggs">Eggs</option>
+          </select>
+        </div>
+
+        <div class="form-group dynamic-field hidden" id="fg-chicken-type">
+          <label for="chickenType">Chicken Type</label>
+          <select id="chickenType" class="form-input" style="appearance: none; background: var(--surface) url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><polyline points=%226 9 12 15 18 9%22></polyline></svg>') no-repeat right 16px center; background-size: 16px;">
+            <option value="Nati Koli">Nati Koli (Country)</option>
+            <option value="Broiler">Broiler</option>
+            <option value="Farm Chicken">Farm Chicken</option>
+          </select>
+        </div>
+
+        <div class="form-group dynamic-field" id="fg-gender">
+          <label>Gender</label>
+          <div class="radio-group" style="grid-template-columns: 1fr 1fr;">
+            <label class="radio-card">
+              <input type="radio" name="gender" value="male">
+              <div class="radio-content"><span>Male</span></div>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="gender" value="female" checked>
+              <div class="radio-content"><span>Female</span></div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group dynamic-field hidden" id="fg-lifestage">
+          <label for="lifeStage">Life Stage</label>
+          <select id="lifeStage" class="form-input" style="appearance: none; background: var(--surface) url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><polyline points=%226 9 12 15 18 9%22></polyline></svg>') no-repeat right 16px center; background-size: 16px;">
+            <!-- Options populated by JS -->
+          </select>
+        </div>
+
+        <div class="form-group dynamic-field" id="fg-breed">
+          <label for="breed">Breed</label>
+          <select id="breed" class="form-input" style="appearance: none; background: var(--surface) url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><polyline points=%226 9 12 15 18 9%22></polyline></svg>') no-repeat right 16px center; background-size: 16px;">
+            <!-- Options populated by JS -->
+          </select>
+        </div>
+
+        <div class="form-group dynamic-field hidden" id="fg-breed-text">
+          <label for="breedText">Breed</label>
+          <input type="text" id="breedText" placeholder="e.g. Local" class="form-input">
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group dynamic-field" id="fg-age">
+            <label for="age">Age</label>
+            <input type="number" id="age" step="0.1" placeholder="Yrs/Mos..." class="form-input">
+          </div>
+          <div class="form-group dynamic-field" id="fg-weight">
+            <label for="weight">Weight (kg) <span class="subtitle">(Opt)</span></label>
+            <input type="number" id="weight" step="0.1" placeholder="e.g. 50" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group dynamic-field hidden" id="fg-milk">
+          <label for="milkProduction">Milk Production (Liters/day)</label>
+          <input type="number" id="milkProduction" step="0.5" placeholder="e.g. 10" class="form-input">
+        </div>
+
+        <div class="form-group dynamic-field" id="fg-bulk" style="flex-direction: row; align-items: center; gap: 8px;">
+          <input type="checkbox" id="bulkOrder" style="width: 20px; height: 20px;">
+          <label for="bulkOrder" style="margin: 0; cursor: pointer;">This is a Bulk Order</label>
+        </div>
+
+        <div class="form-group dynamic-field hidden" id="fg-quantity">
+          <label for="quantity">Quantity Available</label>
+          <input type="number" id="quantity" placeholder="e.g. 50" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="price" id="priceLabel">Price (₹)</label>
+          <input type="number" id="price" placeholder="Amount" required class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location (Village/District)</label>
+          <input type="text" id="location" placeholder="e.g. Pune Rural" required class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="description">Additional Details</label>
+          <textarea id="description" rows="3" placeholder="Health, nature, yield, etc." class="form-input"></textarea>
+        </div>
+
+        <div class="form-grid">
+          <button type="button" id="btnCancelEdit" class="btn-secondary ripple hidden" style="border: 2px solid var(--border); background: transparent;" onclick="app.navigate('home')">Cancel</button>
+          <button type="submit" id="btnSubmitListing" class="btn-primary ripple" style="grid-column: 1/-1;">Submit Listing</button>
+        </div>
+      </form>
+    </div>
+  </template>
+
+  <!-- Detail Modal -->
+  <div class="modal overlay-hidden" id="detailModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content slide-up">
+      <button class="close-modal" id="closeDetail" aria-label="Close details">
+        <i data-lucide="x"></i>
+      </button>
+      <div class="modal-body" id="detailModalBody">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty Views logic for Others -->
+  <template id="view-messages">
+    <div class="view-container fade-in flex-center" style="height: 70vh;">
+      <div class="empty-state">
+        <i data-lucide="message-circle" class="empty-icon"></i>
+        <h3>No Messages Yet</h3>
+        <p>Contact sellers to start chatting.</p>
+      </div>
+    </div>
+  </template>
+
+  <template id="view-saved">
+    <div class="view-container fade-in flex-center" style="height: 70vh;">
+      <div class="empty-state">
+        <i data-lucide="heart" class="empty-icon"></i>
+        <h3>No Saved Items</h3>
+        <p>Like livestock listings to save them here.</p>
+      </div>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
